@@ -46,7 +46,7 @@ checks it entry by entry.
 | `info.json` | Add-on manifest |
 | `init.js` | The toolbar strip and the picker |
 | `rightActions.js` | Action catalog and saved selection |
-| `icon.svg` | The + button icon |
+| `skin/icon/rightActions.svg` | The badge icon: toolbar button and add-on logo |
 | `tools/build-mmip.js` | Packaging |
 
 ## Notes
@@ -59,5 +59,11 @@ MediaMonkey's `actions` registry directly.
 
 The ticks are MediaMonkey's own `Checkbox` control, so they are drawn by the
 skin rather than by the browser.
+
+The icon is one file used both as the toolbar button and as the add-on logo,
+drawn at whatever size each place asks for. It has no fill of its own: the path
+carries `class="textColor"`, the way MediaMonkey's own icons do, so the skin
+colours it and it follows light and dark themes instead of freezing a colour
+from the artwork.
 
 See [CHANGELOG.md](CHANGELOG.md) for what changed in each version.

@@ -24,7 +24,7 @@ var ENTRIES = [
     'info.json',
     'init.js',
     'rightActions.js',
-    'icon.svg'
+    'skin/icon/rightActions.svg'
 ];
 
 function copyInto(from, to) {

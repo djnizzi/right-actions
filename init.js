@@ -22,7 +22,8 @@ localRequirejs('rightActions');
 
 var STRIP_ID = 'righttoolbuttons';
 var HOST_ID = 'rightActionsButtons';
-var ADD_ICON = 'add';
+/* Resolved to skin/icon/rightActions.svg, the file the add-on ships. */
+var ADD_ICON = 'rightActions';
 
 var OVERLAY_ID = 'rightActionsOverlay';
 var STYLE_ID = 'rightActionsStyles';
@@ -393,7 +394,7 @@ function openPicker() {
     buttons.appendChild(cancel);
 
     var foot = newElement('div', 'raFoot');
-    foot.appendChild(newElement('div', 'raBuild', 'Right Actions 0.2.1'));
+    foot.appendChild(newElement('div', 'raBuild', 'Right Actions 0.2.2'));
     foot.appendChild(buttons);
     body.appendChild(foot);
 

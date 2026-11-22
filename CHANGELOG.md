@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.2.2 — 2026-11-22
+
+### Changed
+
+- A new icon: a rounded badge with a plus knocked out of it. It is the toolbar
+  button and the add-on logo both, drawn from one
+  `skin/icon/rightActions.svg`, so it scales to whatever size each place asks
+  for instead of shipping a second copy.
+- The icon has no fill of its own and carries `class="textColor"`, the way
+  MediaMonkey's own icons do, so the skin colours it instead of a colour baked
+  into the artwork.
+
 ## 0.2.1 — 2026-11-22
 
 ### Fixed
