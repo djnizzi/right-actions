@@ -1,4 +1,9 @@
-# Right Actions
+# Right Actions for MediaMonkey
+
+[![Latest release](https://img.shields.io/github/v/release/djnizzi/right-actions?label=release&sort=semver)](https://github.com/djnizzi/right-actions/releases/latest)
+[![Downloads](https://img.shields.io/github/downloads/djnizzi/right-actions/total)](https://github.com/djnizzi/right-actions/releases)
+[![MediaMonkey](https://img.shields.io/badge/MediaMonkey-5.0%2B-1f6feb)](https://www.mediamonkey.com/)
+[![Platform](https://img.shields.io/badge/platform-Windows-lightgrey)](#install)
 
 ![The Right Actions cover: a large orange plus badge, the add-on name, and a
 MediaMonkey window with the new plus button boxed in the right
@@ -71,3 +76,7 @@ colours it and it follows light and dark themes instead of freezing a colour
 from the artwork.
 
 See [CHANGELOG.md](CHANGELOG.md) for what changed in each version.
+
+---
+
+2026 · made with ❤️ by NiZ Design
