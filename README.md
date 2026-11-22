@@ -1,5 +1,9 @@
 # Right Actions
 
+![The Right Actions cover: a large orange plus badge, the add-on name, and a
+MediaMonkey window with the new plus button boxed in the right
+reactions toolbar](docs/rightactions-cover.jpg)
+
 A MediaMonkey 5 add-on that puts a **+** button in the right-hand toolbar, so
 you can keep up to five of MediaMonkey's own actions there.
 
