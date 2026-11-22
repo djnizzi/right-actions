@@ -33,6 +33,7 @@ var RETRY_MS = 250;
 var RETRY_TRIES = 40;
 
 var syncEntries = [];
+var syncTimer = null;
 var syncHooked = false;
 
 var picker = null;
@@ -88,45 +89,71 @@ function actionIcon(act) {
 
 /**
  * Keep each button in the state its action reports: greyed out when the action
- * is disabled (nothing selected), hidden when it says it does not apply. The
- * custom toolbar does the same for its own buttons, so the icons behave like
- * MediaMonkey's.
+ * is disabled (nothing selected), hidden when it says it does not apply.
+ *
+ * The state is never read while the button is being drawn. MediaMonkey's own
+ * custom toolbar waits 200 ms before its first read for the same reason: at
+ * startup, and straight after a click, the selection has not settled yet, and
+ * actions such as Properties ask the focused list — so they report themselves
+ * disabled. Reading at that moment left the icon greyed out and dead until
+ * something redrew the strip. The read is deferred instead, and repeated when
+ * the events that can change an action's state arrive.
  */
-function syncOne(entry) {
+var SYNC_DELAY = 200;
+
+function applyState(entry) {
     var el = entry.el;
     var act = entry.act;
 
     if (!el || !act || !el.controlClass || window._cleanUpCalled) return;
 
-    var visible = true;
-
     try {
-        visible = resolveToValue(act.visible, true);
-        if (isPromise(visible)) visible = true;
+        var visible = resolveToValue(act.visible, true);
 
-        if (!act.submenu) {
-            el.controlClass.disabled = !!resolveToValue(act.disabled, false);
-        }
+        if (!isPromise(visible)) setVisibility(el, !!visible);
     } catch (e) {
         // leave the button as it is
     }
 
-    setVisibility(el, !!visible);
+    try {
+        var disabled = resolveToValue(act.disabled, false);
+
+        if (isPromise(disabled)) {
+            disabled.then(function (res) {
+                if (el.controlClass && !window._cleanUpCalled) el.controlClass.disabled = !!res;
+            });
+        } else if (!act.submenu) {
+            el.controlClass.disabled = !!disabled;
+        }
+    } catch (e) {
+        // leave the button as it is
+    }
 }
 
 function syncAll() {
-    syncEntries.forEach(syncOne);
+    syncEntries.forEach(applyState);
+}
+
+function scheduleSync() {
+    if (syncTimer || window._cleanUpCalled) return;
+
+    syncTimer = setTimeout(function () {
+        syncTimer = null;
+        syncAll();
+    }, SYNC_DELAY);
 }
 
 function trackState(el, act) {
     syncEntries.push({ el: el, act: act });
-    syncOne(syncEntries[syncEntries.length - 1]);
 
     if (syncHooked) return;
     syncHooked = true;
 
-    app.listen(document.body, 'mouseup', syncAll);
-    app.listen(document.body, 'keyup', syncAll);
+    app.listen(document.body, 'mouseup', scheduleSync);
+    app.listen(document.body, 'keyup', scheduleSync);
+    app.listen(document.body, 'itemselectchange', scheduleSync);
+    app.listen(document.body, 'focusedcontrol', scheduleSync);
+    app.listen(document.body, 'viewchange', scheduleSync);
 }
 
 function render() {
@@ -154,6 +181,19 @@ function render() {
     });
 
     addToolButton(host, ADD_ICON, _('Choose toolbar buttons') + '\u2026', openPicker);
+
+    /* A press on our own strip re-reads the state before the button's click
+       handler runs, so a button left greyed by an early read still works on
+       the first click rather than staying dead. */
+    if (!host._rightActionsPress) {
+        host._rightActionsPress = true;
+        host.addEventListener('mousedown', syncAll, true);
+    }
+
+    scheduleSync();
+
+    /* One more read well after startup, in case the library took its time. */
+    setTimeout(syncAll, 1200);
 }
 
 // ---------------------------------------------------------------------------
