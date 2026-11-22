@@ -59,3 +59,5 @@ MediaMonkey's `actions` registry directly.
 
 The ticks are MediaMonkey's own `Checkbox` control, so they are drawn by the
 skin rather than by the browser.
+
+See [CHANGELOG.md](CHANGELOG.md) for what changed in each version.

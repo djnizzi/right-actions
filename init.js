@@ -393,7 +393,7 @@ function openPicker() {
     buttons.appendChild(cancel);
 
     var foot = newElement('div', 'raFoot');
-    foot.appendChild(newElement('div', 'raBuild', 'Right Actions 0.2.0'));
+    foot.appendChild(newElement('div', 'raBuild', 'Right Actions 0.2.1'));
     foot.appendChild(buttons);
     body.appendChild(foot);
 
