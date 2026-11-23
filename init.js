@@ -329,7 +329,6 @@ function ensureStyles() {
         '}',
         '[data-id="' + OVERLAY_ID + '"] .raRow:hover { background-color: rgba(128, 128, 128, 0.16); }',
         '[data-id="' + OVERLAY_ID + '"] .raCheck { flex: 0 0 auto; }',
-        '[data-id="' + OVERLAY_ID + '"] .raRow.raAtLimit { opacity: 0.5; }',
         '[data-id="' + OVERLAY_ID + '"] .raIcon {',
         '  flex: 0 0 18px; width: 18px; height: 18px;',
         '  display: flex; align-items: center; justify-content: center;',
@@ -392,7 +391,6 @@ function openPicker() {
     var colors = themeColors();
     var catalog = module.catalog();
     var selected = module.read();
-    var max = module.MAX_ITEMS;
 
     var root = newElement('div');
     root.setAttribute('data-id', OVERLAY_ID);
@@ -411,10 +409,7 @@ function openPicker() {
     head.appendChild(close);
 
     var body = newElement('div', 'raBody');
-    body.appendChild(newElement('div', 'raHint', sprintf(
-        _('Choose up to %d actions to show beside the + button in MediaMonkey\'s right toolbar.'),
-        max
-    )));
+    body.appendChild(newElement('div', 'raHint', _('Choose the actions to show beside the + button in MediaMonkey\'s right toolbar.')));
 
     var filter = document.createElement('input');
     filter.type = 'text';
@@ -444,7 +439,7 @@ function openPicker() {
     buttons.appendChild(cancel);
 
     var foot = newElement('div', 'raFoot');
-    foot.appendChild(newElement('div', 'raBuild', 'Right Actions 0.2.3'));
+    foot.appendChild(newElement('div', 'raBuild', 'Right Actions 0.2.4'));
     foot.appendChild(buttons);
     body.appendChild(foot);
 
@@ -455,27 +450,9 @@ function openPicker() {
 
     var rows = [];
 
-    function atLimit() {
-        return selected.length >= max;
-    }
-
     function updateCounter() {
-        counter.textContent = sprintf(_('%d of %d selected'), selected.length, max)
+        counter.textContent = sprintf(_('%d selected'), selected.length)
             + ' \u00b7 ' + sprintf(_('%d available'), catalog.length);
-    }
-
-    function refreshLimitState() {
-        var limit = atLimit();
-
-        rows.forEach(function (row) {
-            var control = row.box.controlClass;
-            if (!control) return;
-
-            control.disabled = !control.checked && limit;
-            row.el.classList.toggle('raAtLimit', control.disabled);
-        });
-
-        updateCounter();
     }
 
     /**
@@ -490,21 +467,12 @@ function openPicker() {
         var at = selected.indexOf(key);
 
         if (control.checked) {
-            if (at !== -1) {
-                refreshLimitState();
-                return;
-            }
-            if (atLimit()) {
-                control.checked = false;
-                refreshLimitState();
-                return;
-            }
-            selected.push(key);
+            if (at === -1) selected.push(key);
         } else if (at !== -1) {
             selected.splice(at, 1);
         }
 
-        refreshLimitState();
+        updateCounter();
     }
 
     function applyFilter() {
@@ -585,7 +553,7 @@ function openPicker() {
         ok.style.pointerEvents = 'none';
         updateCounter();
     } else {
-        refreshLimitState();
+        updateCounter();
         applyFilter();
     }
 

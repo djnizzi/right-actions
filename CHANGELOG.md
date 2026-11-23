@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.2.4 — 2026-11-23
+
+### Changed
+
+- The five-action limit is gone. The picker used to stop at five and grey out
+  every row still unticked; it now takes as many actions as you tick, and the
+  toolbar strip makes room for them as it grows.
+- The picker's counter reads "*n* selected · *m* available" instead of "*n* of 5
+  selected", and the hint above the list no longer mentions a maximum.
+
 ## 0.2.3 — 2026-11-23
 
 ### Fixed

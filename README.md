@@ -10,7 +10,7 @@ MediaMonkey window with the new plus button boxed in the right
 reactions toolbar](docs/rightactions-cover.jpg)
 
 A MediaMonkey 5 add-on that puts a **+** button in the right-hand toolbar, so
-you can keep up to five of MediaMonkey's own actions there.
+you can keep MediaMonkey's own actions there.
 
 MediaMonkey draws that toolbar strip from static markup and offers no UI to
 customise it. This add-on inserts a button into the strip with
@@ -24,14 +24,14 @@ beside it the actions you chose.
 
 ## Use
 
-Click **+**, filter or scroll the list, tick up to five actions, press OK. The
+Click **+**, filter or scroll the list, tick the actions you want, press OK. The
 icons appear at the right of the toolbar, in the order you picked them.
 
 Each icon follows its action's own state, so it greys out when the action is
 disabled — the same thing MediaMonkey's custom toolbar does for its buttons.
 
-Five is the cap on purpose: a longer list would have to collapse into an
-ellipsis menu, which defeats the point of a one-click strip.
+There is no limit on how many actions you add: the toolbar strip makes room for
+them as it grows.
 
 ## What it does not do
 

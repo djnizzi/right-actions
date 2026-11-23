@@ -17,7 +17,6 @@
 (function () {
 
     var STORAGE_KEY = 'rightActions.items';
-    var MAX_ITEMS = 5;
     var MAX_DEPTH = 4;
 
     function resolveAction(key) {
@@ -131,8 +130,8 @@
     }
 
     /**
-     * The saved keys, cleaned: known actions only, no duplicates, never more
-     * than MAX_ITEMS. An action whose add-on was uninstalled simply drops out.
+     * The saved keys, cleaned: known actions only, no duplicates. An action
+     * whose add-on was uninstalled simply drops out.
      */
     function read() {
         var value = [];
@@ -153,7 +152,7 @@
         value.forEach(function (raw) {
             var key = String(raw || '').trim();
 
-            if (!key || seen[key] || items.length >= MAX_ITEMS) return;
+            if (!key || seen[key]) return;
             if (!resolveAction(key)) return;
 
             seen[key] = true;
@@ -169,7 +168,7 @@
         (items || []).forEach(function (raw) {
             var key = String(raw || '').trim();
 
-            if (!key || clean.indexOf(key) !== -1 || clean.length >= MAX_ITEMS) return;
+            if (!key || clean.indexOf(key) !== -1) return;
             if (!resolveAction(key)) return;
 
             clean.push(key);
@@ -186,7 +185,6 @@
 
     window.rightActions = {
         STORAGE_KEY: STORAGE_KEY,
-        MAX_ITEMS: MAX_ITEMS,
         resolveAction: resolveAction,
         catalog: catalog,
         read: read,

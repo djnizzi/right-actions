@@ -1,8 +1,8 @@
 {
     "title": "Right Actions",
     "id": "rightActions",
-    "description": "Adds a + button to MediaMonkey's right toolbar so you can keep up to five of MediaMonkey's own actions there, beside the icons the app already draws.",
-    "version": "0.2.3",
+    "description": "Adds a + button to MediaMonkey's right toolbar so you can keep MediaMonkey's own actions there, beside the icons the app already draws.",
+    "version": "0.2.4",
     "author": "NiZDesign",
     "type": "general",
     "icon": "skin/icon/rightActions.svg",
