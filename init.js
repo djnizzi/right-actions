@@ -97,8 +97,10 @@ function actionIcon(act) {
  * startup, and straight after a click, the selection has not settled yet, and
  * actions such as Properties ask the focused list — so they report themselves
  * disabled. Reading at that moment left the icon greyed out and dead until
- * something redrew the strip. The read is deferred instead, and repeated when
- * the events that can change an action's state arrive.
+ * something redrew the strip. The read is deferred instead, and then kept
+ * fresh from three directions: the events that can change an action's state, a
+ * read whenever the pointer is over the strip, and a slow watchdog for the
+ * changes MediaMonkey makes without raising anything this document hears.
  */
 var SYNC_DELAY = 200;
 
@@ -144,17 +146,51 @@ function scheduleSync() {
     }, SYNC_DELAY);
 }
 
+/*
+ * Which control MediaMonkey considers focused — the thing actions such as
+ * Properties compute their state from — moves for reasons that raise nothing
+ * here: a dialog opening or closing, a view being rebuilt, a tab being
+ * restored, the library restoring its selection in the seconds after startup.
+ * A state read at such a moment says "disabled", and without another read the
+ * icon stays greyed and dead until the user happens to click something else.
+ *
+ * So the state is kept fresh from three directions: every event that can move
+ * the selection or the focus, a read whenever the pointer is over the strip
+ * (so the button about to be pressed is never stale), and this watchdog. It
+ * writes only when the answer differs, and does nothing while the window is
+ * hidden or the picker is open.
+ */
+var WATCH_MS = 1000;
+var watchTimer = null;
+
+function startWatch() {
+    if (watchTimer) return;
+
+    watchTimer = setInterval(function () {
+        if (window._cleanUpCalled) {
+            clearInterval(watchTimer);
+            watchTimer = null;
+            return;
+        }
+
+        if (picker || document.hidden) return;
+
+        syncAll();
+    }, WATCH_MS);
+}
+
 function trackState(el, act) {
     syncEntries.push({ el: el, act: act });
 
     if (syncHooked) return;
     syncHooked = true;
 
-    app.listen(document.body, 'mouseup', scheduleSync);
-    app.listen(document.body, 'keyup', scheduleSync);
-    app.listen(document.body, 'itemselectchange', scheduleSync);
-    app.listen(document.body, 'focusedcontrol', scheduleSync);
-    app.listen(document.body, 'viewchange', scheduleSync);
+    [
+        'mouseup', 'keyup', 'click', 'focusin', 'focusout', 'dragend',
+        'itemselectchange', 'focusedcontrol', 'viewchange'
+    ].forEach(function (name) {
+        app.listen(document.body, name, scheduleSync);
+    });
 }
 
 function render() {
@@ -191,10 +227,24 @@ function render() {
         host.addEventListener('mousedown', syncAll, true);
     }
 
-    scheduleSync();
+    /* A read straight after the strip is built can still be early: the library
+       restores its selection over the first seconds, and the actions that ask
+       the focused list report themselves disabled until it has. Re-read a few
+       times while that settles rather than once. */
+    [400, 800, 1500, 2500, 4000].forEach(function (delay) {
+        setTimeout(syncAll, delay);
+    });
 
-    /* One more read well after startup, in case the library took its time. */
-    setTimeout(syncAll, 1200);
+    /* Pointer over the strip: the state is re-read as the user reaches for a
+       button, so a stale grey is gone before the click lands. */
+    if (!host._rightActionsHover) {
+        host._rightActionsHover = true;
+        host.addEventListener('mouseover', syncAll);
+    }
+
+    startWatch();
+
+    scheduleSync();
 }
 
 // ---------------------------------------------------------------------------
@@ -394,7 +444,7 @@ function openPicker() {
     buttons.appendChild(cancel);
 
     var foot = newElement('div', 'raFoot');
-    foot.appendChild(newElement('div', 'raBuild', 'Right Actions 0.2.2'));
+    foot.appendChild(newElement('div', 'raBuild', 'Right Actions 0.2.3'));
     foot.appendChild(buttons);
     body.appendChild(foot);
 

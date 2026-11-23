@@ -1,5 +1,23 @@
 # Changelog
 
+## 0.2.3 — 2026-11-23
+
+### Fixed
+
+- A button could stay greyed out after its action had become usable again —
+  Properties was the one that showed it, and pressing any other icon brought it
+  back. The state of an action like Properties is computed from which control
+  MediaMonkey last focused, and that changes without any event the add-on hears:
+  a dialog closing, a view being rebuilt, the selection restored after startup.
+  The state was read once, at a moment when the answer was still "disabled",
+  and nothing read it again until the next click happened to.
+- The state is now kept fresh from three directions: every event that can move
+  the selection or the focus, a read whenever the pointer is over the strip, and
+  a one-second watchdog that writes only when the answer changes. A read is also
+  repeated several times while the library settles after startup instead of
+  once. A button the user is about to press is therefore never left greyed by a
+  stale read.
+
 ## 0.2.2 — 2026-11-22
 
 ### Changed
